@@ -1,106 +1,101 @@
-const plusBtns = document.querySelectorAll(".fa-plus");
-const minusBtns = document.querySelectorAll(".fa-minus");
-const trashBtns_cards = document.querySelectorAll(".buttons-div .fa-trash-can");
-const quantitySpan = document.querySelectorAll(".quantity");
-const productPriceDiv = document.querySelectorAll(".product-price");
-const buttonsDiv = document.querySelectorAll(".buttons-div");
-const products_cards = document.querySelectorAll(".product");
-const discountedPrices = document.querySelectorAll("#discounted-price");
-const productPrices = document.querySelectorAll("#product-price");
+const SHIPPINGPRICE = 25.99;
+const TAX_RATE = 0.18;
+const SHIPPING_LIMIT = 3000;
+
+
+
+const deleteAllBtn = document.querySelector(".delete-div");
+const products = document.querySelector(".products");
 const selectedPrice = document.querySelector("#selected-price");
 const shippingPrice = document.querySelector("#shipping");
 const taxPrice = document.querySelector("#tax");
 const totalPrice = document.querySelector("#total");
-const deleteAllCardsBtn = document.querySelector(".delete-div");
-const products = document.querySelectorAll(".product");
-const noProductsDiv = document.querySelector(".noproducts");
-
-console.log(noProductsDiv);
 
 
-console.log(productPrices);
-console.log(typeof productPrices);
-console.log(productPrices[1].textContent);
-
-plusBtns.forEach((eachPlus, i) => {
-  eachPlus.addEventListener("click", () => {
-    //quantity plus
-    quantitySpan[i].textContent = Number(quantitySpan[i].textContent) + 1;
-    //product price
-    productPrices[i].textContent = (
-      Number(discountedPrices[i].textContent) *
-      Number(quantitySpan[i].textContent)
-    ).toFixed(2);
-
-    //selected price
-    selectedPrice.textContent = 0;
-    productPrices.forEach((eachPrice) => {
-      selectedPrice.textContent = (
-        Number(selectedPrice.textContent) + Number(eachPrice.textContent)
-      ).toFixed(2);
-    });
-  });
-});
-
-//MINUS
-minusBtns.forEach((eachMinus, i) => {
-  eachMinus.addEventListener("click", () => {
-    //quantity minus
-    if (Number(quantitySpan[i].textContent) != 1) {
-      quantitySpan[i].textContent = Number(quantitySpan[i].textContent) - 1;
-      //product price minus
-      productPrices[i].textContent = (
-        Number(discountedPrices[i].textContent) *
-        Number(quantitySpan[i].textContent)
-      ).toFixed(2);
-
-      //selected price minus
-      selectedPrice.textContent = 0;
-      productPrices.forEach((eachPrice) => {
-        selectedPrice.textContent = (
-          Number(selectedPrice.textContent) + Number(eachPrice.textContent)
-        ).toFixed(2);
-      });
-    } else {
-    }
-  });
-});
-
-//remove cards
-trashBtns_cards.forEach((eachTrash, i) => {
-  eachTrash.addEventListener("click", () => {
-    //remove from cards
-    products_cards[i].remove();
-    console.log(products);
-    
-  });
-});
-
-selectedPrice.addEventListener("DOMSubtreeModified", () => {
-  //shipping price
-  if (+selectedPrice.textContent < 3000) {
-    shippingPrice.textContent = 25.99;
-  } else {
+deleteAllBtn.addEventListener("click", () => {
+  products.textContent = "No Product";
+  products.classList.add("no-product");
+  document.querySelector(".delete-div").remove();
     shippingPrice.textContent = "0.00";
-  }
+    taxPrice.textContent = "0.00";
+    totalPrice.textContent = "0.00";
 
-  // Tax
-  taxPrice.textContent = (
-    (Number(selectedPrice.textContent) * 18) /
-    100
-  ).toFixed(2);
-
-  totalPrice.textContent = (
-    Number(selectedPrice.textContent) +
-    Number(shippingPrice.textContent) +
-    Number(taxPrice.textContent)
-  ).toFixed(2);
 });
 
-deleteAllCardsBtn.onclick = function () {
-  if (confirm("Are you Sure?")) {
-    products.forEach((item) => item.remove());
-    noProductsDiv.classList.add("all-deleted")
-  }
-};
 
+products.addEventListener("click", (e) => {
+
+    //?  plus
+  if (e.target.classList.contains("fa-plus")) { // plus
+      e.target.previousElementSibling.textContent++;
+      calculatePrice(e.target);
+
+//? minus
+  } else if (e.target.classList.contains("fa-minus")) {//minus
+      if(Number(e.target.nextElementSibling.textContent) > 1){
+        e.target.nextElementSibling.textContent--;
+        calculatePrice(e.target);
+
+      }
+
+//? remove
+  }else if(e.target.classList.contains("fa-trash-can")){ //remove
+    e.target.closest(".product").remove();
+    calculatePrice(e.target);
+    if(document.querySelectorAll(".product").length == 0){
+        products.textContent = "No Product";
+        products.classList.add("no-product");
+    }
+  }
+});
+
+
+const calculatePrice = (btn)=>{ 
+
+
+    const discountedPrice = btn.closest(".product-info").querySelector('#discounted-price').textContent;
+
+    const quantity = btn.parentNode.querySelector("#quantity").textContent;
+
+    const result = discountedPrice * quantity;
+
+    btn.closest(".buttons-div").querySelector("#product-price").textContent = result.toFixed(2);
+
+    calculateTotalPrice();
+}
+
+
+
+
+const calculateTotalPrice = ()=>{
+    const prices = document.querySelectorAll("#product-price");
+
+    let sum  = [...prices].reduce((sum,item) => sum + +item.textContent , 0).toFixed(2);
+    console.log(sum);
+    selectedPrice.textContent = sum;
+
+
+if(+selectedPrice.textContent == 0){
+    shippingPrice.textContent = "0.00";
+}else if(+selectedPrice.textContent < SHIPPING_LIMIT){
+        shippingPrice.textContent = SHIPPINGPRICE;
+    }else{
+        shippingPrice.textContent = "0.00";
+    }
+
+    taxPrice.textContent = (+selectedPrice.textContent * TAX_RATE).toFixed(2);
+
+
+    totalPrice.textContent =( Number(selectedPrice.textContent) + Number(shippingPrice.textContent) + Number(shippingPrice.textContent) + Number(taxPrice.textContent)).toFixed(2);
+
+
+
+
+
+
+
+}
+
+window.addEventListener("load",()=>{
+    calculateTotalPrice();
+})
