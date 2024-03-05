@@ -84,7 +84,7 @@
 ## Project Skeleton 
 
 ```
-Google-Learning (folder)
+Checkout (folder)
 |
 |----style.css       
 |----img (folder)           
