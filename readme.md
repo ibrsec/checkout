@@ -15,7 +15,7 @@
     <a href="https://github.com/ibrsec/checkout"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://ibrsec.github.io/checkout/">View Demo</a>
+    <a href="https://checkout-two-nu.vercel.app/">View Demo</a>
     ·
     <a href="https://github.com/ibrsec/checkout/issues">Report Bug</a>
     ·
@@ -60,7 +60,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![checkout](./img/project.gif)](https://ibrsec.github.io/checkout/)
+[![checkout](./img/project.gif)](https://checkout-two-nu.vercel.app/)
 
 
 
